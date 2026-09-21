@@ -1,5 +1,7 @@
 # Rahkaran ERP → MySQL Integration
 
+[![CI](https://github.com/ahmadrasti/rahkaran-erp-mysql-integration/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmadrasti/rahkaran-erp-mysql-integration/actions/workflows/ci.yml)
+
 Clean-room reference implementation of an API-based data integration pipeline for Rahkaran ERP and MySQL.
 
 > **Clean-room disclosure:** This portfolio project is an independently reconstructed demonstration. It contains no employer data, credentials, production endpoints, proprietary business logic, confidential implementation details, or source code from the original production system.
@@ -72,11 +74,16 @@ Secrets are read solely from environment variables. The checked-in example value
 
 ## Testing
 
-The test suite covers pagination, retry behavior, validation, transformations, checkpoints, duplicate handling, idempotent reruns, interrupted recovery, mock responses, and persistence behavior through an in-memory test store.
+The unit suite covers pagination, retry behavior, validation, transformations, checkpoints, duplicate handling, idempotent reruns, interrupted recovery, mock responses, and persistence behavior through an in-memory test store.
 
 ## CI
 
-GitHub Actions runs the standard-library test suite without private services, credentials, or network access to any enterprise system.
+GitHub Actions runs two independent jobs from a clean checkout:
+
+- **Unit tests** run the local Python test suite.
+- **MySQL integration** starts a real MySQL 8.4 service container and this repository's existing synthetic mock ERP API. It initializes the generic schema, runs the integration application, and asserts the initial synthetic row counts, persisted checkpoints, and successful audit records.
+
+The integration job then runs the same workflow a second time to verify idempotent upserts and unchanged business-record counts. A third fresh application process verifies that persisted checkpoints can be reused safely and that the expected audit entries are recorded. The workflow uses local runner networking and synthetic demo configuration only; it does not contact enterprise systems or require GitHub Secrets.
 
 ## Limitations
 
