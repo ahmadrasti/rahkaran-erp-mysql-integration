@@ -1,0 +1,5 @@
+{
+  "entities": ["customers", "products", "orders"],
+  "page_size": 3,
+  "checkpoint_strategy": "maximum_updated_at"
+}

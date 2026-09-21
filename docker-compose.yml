@@ -1,0 +1,32 @@
+services:
+  mock-erp:
+    build: .
+    command: python -m mock_server.app
+    environment:
+      PYTHONPATH: /app/src:/app
+    ports:
+      - "8000:8000"
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: erp_demo
+      MYSQL_USER: demo_user
+      MYSQL_PASSWORD: demo_password
+      MYSQL_ROOT_PASSWORD: demo_root_password
+    volumes:
+      - ./docs/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pdemo_root_password"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  integration:
+    build: .
+    env_file: .env.example
+    environment:
+      PYTHONPATH: /app/src:/app
+    depends_on:
+      mock-erp:
+        condition: service_started
+      mysql:
+        condition: service_healthy
