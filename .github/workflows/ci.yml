@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13,3 +13,56 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m unittest discover -s tests -v
+
+  mysql-integration:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: erp_demo
+          MYSQL_USER: demo_user
+          MYSQL_PASSWORD: demo_password
+          MYSQL_ROOT_PASSWORD: demo_root_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost -pdemo_root_password"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      ERP_BASE_URL: http://127.0.0.1:8000
+      ERP_USERNAME: demo_user
+      ERP_PASSWORD: demo_password
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: erp_demo
+      MYSQL_USER: demo_user
+      MYSQL_PASSWORD: demo_password
+      PYTHONPATH: src:.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the generic MySQL driver
+        run: python -m pip install "PyMySQL>=1.1,<2"
+      - name: Start synthetic mock ERP
+        run: python -m mock_server.app > mock-server.log 2>&1 &
+      - name: Wait for local mock service
+        run: python tests/ci/wait_for_mock.py
+      - name: Initialize generic schema
+        run: python tests/ci/initialize_mysql.py
+      - name: Initial synthetic sync and assertions
+        run: |
+          python -m rahkaran_integration.main
+          python tests/ci/verify_mysql_state.py --expected-audits 3
+      - name: Idempotent second sync and assertions
+        run: |
+          python -m rahkaran_integration.main
+          python tests/ci/verify_mysql_state.py --expected-audits 6
+      - name: Fresh-process checkpoint recovery and assertions
+        run: |
+          python -m rahkaran_integration.main
+          python tests/ci/verify_mysql_state.py --expected-audits 9
