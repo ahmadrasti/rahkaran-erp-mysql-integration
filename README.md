@@ -1,6 +1,6 @@
 # Rahkaran ERP → MySQL Integration
 
-[![CI](https://github.com/ahmadrasti/rahkaran-erp-mysql-integration/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmadrasti/rahkaran-erp-mysql-integration/actions/workflows/ci.yml)
+[![CI](https://github.com/ahmadrastibarzoki/rahkaran-erp-mysql-integration/actions/workflows/ci.yml/badge.svg)](https://github.com/ahmadrastibarzoki/rahkaran-erp-mysql-integration/actions/workflows/ci.yml)
 
 Clean-room reference implementation of an API-based data integration pipeline for Rahkaran ERP and MySQL.
 
@@ -89,6 +89,6 @@ The integration job then runs the same workflow a second time to verify idempote
 
 This is a teaching and portfolio project. It is not a production connector, does not implement official vendor interfaces, and does not claim production performance or business outcomes.
 
-## Clean-Room / Confidentiality Disclosure
 
-Designed from experience with enterprise ERP integration patterns and independently reconstructed for demonstration purposes. All data, routes, schemas, and business semantics in this repository are synthetic.
+
+
