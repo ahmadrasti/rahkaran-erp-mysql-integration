@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 
 import pymysql
+from demo_settings import load_ci_settings
 
 
 def connect_with_retry():
@@ -20,6 +21,7 @@ def connect_with_retry():
 
 
 def main() -> None:
+    load_ci_settings()
     schema = (Path(__file__).parents[2] / "docs" / "schema.sql").read_text(encoding="utf-8")
     with connect_with_retry() as connection:
         with connection.cursor() as cursor:

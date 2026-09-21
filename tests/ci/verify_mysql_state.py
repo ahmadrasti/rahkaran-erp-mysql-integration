@@ -5,6 +5,7 @@ import argparse
 import os
 
 import pymysql
+from demo_settings import load_ci_settings
 
 
 def scalar(cursor, statement: str) -> int:
@@ -13,6 +14,7 @@ def scalar(cursor, statement: str) -> int:
 
 
 def main() -> None:
+    load_ci_settings()
     parser = argparse.ArgumentParser(); parser.add_argument("--expected-audits", type=int, required=True)
     args = parser.parse_args()
     connection = pymysql.connect(host=os.environ["MYSQL_HOST"], port=int(os.environ["MYSQL_PORT"]), user=os.environ["MYSQL_USER"], password=os.environ["MYSQL_PASSWORD"], database=os.environ["MYSQL_DATABASE"], autocommit=True)

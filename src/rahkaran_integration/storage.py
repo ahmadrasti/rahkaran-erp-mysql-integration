@@ -94,3 +94,4 @@ class MySqlStore:
     def add_audit(self, entity: str, outcome: str, rows: int, detail: str) -> None:
         with self.connection.cursor() as cursor:
             cursor.execute("INSERT INTO api_audit_log (entity_name, outcome, row_count, detail) VALUES (%s, %s, %s, %s)", (entity, outcome, rows, detail))
+        self.connection.commit()
