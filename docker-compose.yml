@@ -6,6 +6,11 @@ services:
       PYTHONPATH: /app/src:/app
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://localhost:8000/api/v1/orders')"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
   mysql:
     image: mysql:8.4
     environment:
@@ -27,6 +32,6 @@ services:
       PYTHONPATH: /app/src:/app
     depends_on:
       mock-erp:
-        condition: service_started
+        condition: service_healthy
       mysql:
         condition: service_healthy
