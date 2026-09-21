@@ -12,3 +12,5 @@ def load_ci_settings() -> None:
             os.environ[key] = value
     os.environ["ERP_BASE_URL"] = "http://127.0.0.1:8000"
     os.environ["MYSQL_HOST"] = "127.0.0.1"
+    os.environ["MYSQL_USER"] = "root"
+    os.environ["MYSQL_PASSWORD"] = ""
